@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Погода в городе</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        input, button {
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 16px;
+        }
+        button {
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .weather-info {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+        }
+        .weather-icon {
+            width: 100px;
+            height: 100px;
+        }
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <h1>Узнайте погоду в вашем городе</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        <input type="text" name="city" placeholder="Введите название города" value="{{ city }}">
+        <button type="submit">Узнать погоду</button>
+    </form>
+
+    {% if error %}
+        <div class="error">{{"Город не найден. Проверьте название и попробуйте заново."}}</div>
+    {% endif %}
+
+    {% if weather_data %}
+    <div class="weather-info">
+        <h2>Погода в {{ weather_data.city }}, {{ weather_data.country }}</h2>
+        <img class="weather-icon" src="https://openweathermap.org/img/wn/{{ weather_data.icon }}@2x.png" alt="{{ weather_data.description }}">
+        <p><strong>Температура:</strong> {{ weather_data.temp }}°C (ощущается как {{ weather_data.feels_like }}°C)</p>
+        <p><strong>Погода:</strong> {{ weather_data.description }}</p>
+        <p><strong>Влажность:</strong> {{ weather_data.humidity }}%</p>
+        <p><strong>Давление:</strong> {{ weather_data.pressure }} мм рт. ст.</p>
+        <p><strong>Ветер:</strong> {{ weather_data.wind }} м/с</p>
+    </div>
+    {% endif %}
+</body>
+</html>

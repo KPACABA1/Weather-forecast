@@ -1,8 +1,13 @@
 from pathlib import Path
 
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-_irkev#@4kxyi1#j!-&u$&m0t&=(i&3=mra&#ii__gx6w&b%tf'
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 DEBUG = True
 
@@ -16,6 +21,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # Дополнительные приложения
+    'weather',
 ]
 
 MIDDLEWARE = [
