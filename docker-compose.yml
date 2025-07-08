@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      # Пробрасываем порт 8000 из контейнера на хост
+      - "8000:8000"
+    volumes:
+      # Для hot-reload (изменения кода без пересборки)
+      - .:/app
+    environment:
+      # Указываем модуль настроек
+      - DJANGO_SETTINGS_MODULE=config.settings
+      - DEBUG=True
