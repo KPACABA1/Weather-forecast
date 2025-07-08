@@ -1,8 +1,6 @@
 import requests
 from django.shortcuts import render
 
-from config import settings
-
 import os
 from dotenv import load_dotenv
 
