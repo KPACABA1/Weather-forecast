@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+    <!-- Подключаем jQuery и jQuery UI для автодополнения -->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Погода в городе</title>
@@ -45,11 +50,11 @@
 </head>
 <body>
     <h1>Узнайте погоду в вашем городе</h1>
-
-    <form method="post">
-        {% csrf_token %}
-        <input type="text" name="city" placeholder="Введите название города" value="{{ city }}">
-        <button type="submit">Узнать погоду</button>
+    <form method="POST" id="weather-form">
+    {% csrf_token %}
+    <!-- Поле с автодополнением -->
+    <input type="text" id="city-input" name="city" placeholder="Введите город...">
+    <button type="submit">Узнать погоду</button>
     </form>
 
     {% if error %}
@@ -67,5 +72,21 @@
         <p><strong>Ветер:</strong> {{ weather_data.wind }} м/с</p>
     </div>
     {% endif %}
+
+    <!-- Скрипт для автодополнения -->
+    <script>
+    $(document).ready(function() {
+        $("#city-input").autocomplete({
+            source: "/city-autocomplete/",
+            minLength: 2,
+            select: function(event, ui) {
+                // Разделяем строку по запятой и берем только название города
+                var cityOnly = ui.item.value.split(",")[0].trim();
+                $("#city-input").val(cityOnly);
+                $("#weather-form").submit();
+            }
+        });
+    });
+    </script>
 </body>
 </html>

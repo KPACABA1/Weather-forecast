@@ -1,10 +1,14 @@
 import requests
+from django.http import JsonResponse
 from django.shortcuts import render
 
 import os
 from dotenv import load_dotenv
 
 load_dotenv()
+
+
+api_key = os.getenv('OPENWEATHERMAP_API_KEY')
 
 
 def weather(request):
@@ -19,7 +23,6 @@ def weather(request):
 
         try:
             # Получаем API ключ из настроек и делаем запрос к сервису openweathermap
-            api_key = os.getenv('OPENWEATHERMAP_API_KEY')
             url = f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}&units=metric&lang=ru"
 
             response = requests.get(url)
@@ -49,3 +52,30 @@ def weather(request):
         'error': error,
         'city': city,
     })
+
+
+def city_autocomplete(request):
+    """Вьюшка для создания подсказок при наборе города в вьюшке weather"""
+    # Делаем настройки для создания подсказок
+    query = request.GET.get('term', '')
+    if not query:
+        # Пустой список, если запрос пустой
+        return JsonResponse([], safe=False)
+
+    # Делаем запрос
+    url = f"http://api.openweathermap.org/geo/1.0/direct?q={query}&limit=5&appid={api_key}"
+    try:
+        response = requests.get(url)
+        # Проверяем что ответ успешный или вызывается ошибка
+        response.raise_for_status()
+        # Потом принтануть и узнать какой ответ даёт
+        cities = response.json()
+
+        # Форматируем ответ
+        suggestions = [
+            {"label": f"{city['name']}, {city.get('country', '')}", "value": city["name"]} for city in cities
+        ]
+        return JsonResponse(suggestions, safe=False)
+
+    except requests.exceptions.RequestException as e:
+        return JsonResponse([], safe=False)

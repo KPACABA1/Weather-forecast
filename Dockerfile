@@ -16,5 +16,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Копируем весь проект
 COPY . .
 
-# Команда для запуска Django (позже заменим на gunicorn)
+# Команда для запуска Django
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
