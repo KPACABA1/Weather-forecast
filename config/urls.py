@@ -6,4 +6,5 @@ urlpatterns = [
 
     # Урлы для приложения погоды
     path('', include('weather.urls', namespace='weather')),
+    path('users/', include('users.urls', namespace='users')),
 ]

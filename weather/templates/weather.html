@@ -46,9 +46,36 @@
         .error {
             color: red;
         }
+        .auth-button {
+        padding: 6px 12px;
+        margin: 0 4px;
+        text-decoration: none;
+        color: #333;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        }
+        .auth-button:hover {
+            background-color: #f5f5f5;
+            border-color: #ccc;
+        }
+        .logout-button:hover {
+            color: #d32f2f;
+            border-color: #d32f2f;
+        }
     </style>
 </head>
 <body>
+    <div class="auth-buttons">
+    {% if user.is_authenticated %}
+        <a href="{% url 'users:logout' %}" class="auth-button logout-button">Выход</a>
+    {% else %}
+        <a href="{% url 'users:login' %}" class="auth-button">Вход</a>
+        <a href="{% url 'users:register' %}" class="auth-button">Регистрация</a>
+    {% endif %}
+    </div>
+
     <h1>Узнайте погоду в вашем городе</h1>
     <form method="POST" id="weather-form">
     {% csrf_token %}
@@ -71,6 +98,19 @@
         <p><strong>Давление:</strong> {{ weather_data.pressure }} мм рт. ст.</p>
         <p><strong>Ветер:</strong> {{ weather_data.wind }} м/с</p>
     </div>
+    {% endif %}
+    {% if recent_cities %}
+      <div class="recent-cities">
+        <h3>Недавно просмотренные:</h3>
+        <ul>
+          {% for city in recent_cities %}
+            <li>
+              {{ city.city }}
+              ({{ city.search_count }} раз)
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
     {% endif %}
 
     <!-- Скрипт для автодополнения -->

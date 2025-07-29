@@ -5,6 +5,8 @@ from django.shortcuts import render
 import os
 from dotenv import load_dotenv
 
+from weather.models import UserCityHistory
+
 load_dotenv()
 
 
@@ -16,6 +18,7 @@ def weather(request):
     weather_data = None
     error = None
     city = ''
+    recent_cities = []
 
     if request.method == 'POST':
         # Получаем название города
@@ -43,14 +46,26 @@ def weather(request):
                     'wind': round(data['wind']['speed']),
                 }
 
+                # Функционал при котором при поиске города, дополнительно создавалась история поиска
+                history, created = UserCityHistory.objects.get_or_create(user=request.user, city=city)
+
+                if not created:
+                    history.search_count += 1
+                    history.save()
+
         # Если город не найден, сообщаем об этом пользователю
         except requests.exceptions.RequestException as e:
             error = f"Ошибка при запросе к API: {str(e)}"
+
+        # Получаем последние 3 города для авторизованных пользователей
+        if request.user.is_authenticated:
+            recent_cities = UserCityHistory.objects.filter(user=request.user).order_by('-last_search')[:3]
 
     return render(request, 'weather.html', {
         'weather_data': weather_data,
         'error': error,
         'city': city,
+        'recent_cities': recent_cities,
     })
 
 
