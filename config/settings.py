@@ -24,7 +24,8 @@ INSTALLED_APPS = [
 
     # Дополнительные приложения
     'weather',
-    'users'
+    'users',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [

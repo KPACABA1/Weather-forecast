@@ -1,11 +1,14 @@
 import requests
+from django.db.models import Sum
 from django.http import JsonResponse
 from django.shortcuts import render
 
 import os
 from dotenv import load_dotenv
+from rest_framework.generics import ListAPIView
 
 from weather.models import UserCityHistory
+from weather.serializers import CityListAPIViewSerializer
 
 load_dotenv()
 
@@ -94,3 +97,17 @@ def city_autocomplete(request):
 
     except requests.exceptions.RequestException as e:
         return JsonResponse([], safe=False)
+
+
+class CityListAPIView(ListAPIView):
+    """Класс для вывода всех городов которые искали с количеством их запросов."""
+    serializer_class = CityListAPIViewSerializer
+
+    def get_queryset(self):
+        # Группируем по городу и суммируем search_count
+        return (
+            UserCityHistory.objects
+            .values('city')  # Группировка по полю 'city'
+            .annotate(total_searches=Sum('search_count'))  # Сумма всех запросов
+            .order_by('-total_searches')  # Сортировка по убыванию популярности
+        )
